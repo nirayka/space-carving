@@ -7,8 +7,18 @@
 class Camera
 {
 public:
-    Camera();
-    bool fallsInBeam(sweepDir direction);
+    Camera(RGBA *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp, int width, int height, float inHeightAng);
+
+    glm::mat4 calculateViewMatrix() const;
+    void getViewMatrix() const;
+    void getInverseViewMatrix() const;
+
+    bool fallsInBeam(sweepDir direction) const;
+    glm::vec2 projectVoxelToImage(Voxel v);
+    glm::vec3 getColorFromProjection(glm::vec2 coords);
+
+    float getHeightAngle() const;
+    float getAspectRatio() const;
 
 private:
     RGBA *photoData;
@@ -16,8 +26,12 @@ private:
     glm::vec4 look;
     glm::vec4 up;
 
-    float heightAngle; // The height angle of the camera in RADIANS
+    glm::mat4 viewMatrix;
+    glm::mat4 inverseViewMatrix;
 
+    int sceneWidth;
+    int sceneHeight;
+    float heightAngle; // in radians
 };
 
 #endif // CAMERA_H

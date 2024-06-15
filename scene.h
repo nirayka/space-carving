@@ -13,11 +13,12 @@ class Scene
 {
 public:
     Scene();
-    // getters here
+
+    std::vector<Camera> getCamerasForVoxel(Voxel v, sweepDir dir);
 
 
 private:
-    // voxel volume
+    // TODO add voxel volume
     std::vector<Camera> cameras;
 };
 

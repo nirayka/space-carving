@@ -9,10 +9,10 @@ class SpaceCarver
 {
 public:
     SpaceCarver();
+
     void multiSweep();
     void planeSweep(sweepDir dir);
     bool isConsistent(Voxel v, std::vector<Camera>);
-
 };
 
 #endif // SPACECARVER_H
