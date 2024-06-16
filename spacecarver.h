@@ -1,7 +1,7 @@
 #ifndef SPACECARVER_H
 #define SPACECARVER_H
 
-#include "camera.h"
+#include "scene.h"
 #include "structs.h"
 #include <vector>
 
@@ -9,10 +9,15 @@ class SpaceCarver
 {
 public:
     SpaceCarver();
-
-    void multiSweep();
+    bool isConsistent(Voxel v);
+    void helpPlaneSweep(Voxel voxel, sweepDir dir);
     void planeSweep(sweepDir dir);
-    bool isConsistent(Voxel v, std::vector<Camera>);
+    void multiSweep();
+
+
+private:
+    Scene scene;
+    int threshold;
 };
 
 #endif // SPACECARVER_H

@@ -3,20 +3,16 @@
 #include "glm/glm.hpp"
 #include <cstdint>
 
-struct RGBA {
-    std::uint8_t r;
-    std::uint8_t g;
-    std::uint8_t b;
-    std::uint8_t a = 255;
-};
 
 struct Voxel {
     glm::vec3 pos;
     bool isCarved;
-    int sweepCount;
+    int seenCount;
     int redSum, redSumSquared;
     int greenSum, greenSumSquared;
     int blueSum, blueSumSquared;
+
+    // Voxel() : sum_color(0.0f), sum_color_squared(0.0f), count(0), is_carved(false) {}
 };
 
 enum sweepDir {
@@ -27,3 +23,12 @@ enum sweepDir {
     posZ,
     negZ
 };
+
+
+struct RGBA {
+    std::uint8_t r;
+    std::uint8_t g;
+    std::uint8_t b;
+    std::uint8_t a = 255;
+};
+
