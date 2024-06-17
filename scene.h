@@ -18,7 +18,7 @@ public:
     int getWidth();
     int getHeight();
     int getDepth();
-    std::vector<Camera> getCamerasForVoxel(Voxel v, sweepDir dir);
+    std::vector<Camera> getCamerasForVoxel(Voxel vox, sweepDir dir);
 
 private:
     int width, height, depth;

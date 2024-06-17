@@ -20,9 +20,10 @@ public:
     float getHeightAngle() const;
     float getAspectRatio() const;
 
+    glm::vec4 pos;
+
 private:
     RGBA *photoData;
-    glm::vec4 pos;
     glm::vec4 look;
     glm::vec4 up;
 

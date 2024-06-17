@@ -4,6 +4,8 @@
 SpaceCarver::SpaceCarver()
 {
     // TODO
+    // intiialize the scene so that its a cube in the positive x y z octant and that
+    // it contains all cameras
 }
 
 bool SpaceCarver::isConsistent(Voxel v) {

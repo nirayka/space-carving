@@ -8,4 +8,6 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
     return a.exec();
+
+    // todo: how to initialize voxel volume based on cameras?
 }
