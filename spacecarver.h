@@ -13,6 +13,7 @@ public:
     void helpPlaneSweep(Voxel voxel, sweepDir dir);
     void planeSweep(sweepDir dir);
     void multiSweep();
+    void produceOutput();
 
 
 private:

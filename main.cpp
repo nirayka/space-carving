@@ -9,5 +9,7 @@ int main(int argc, char *argv[])
     w.show();
     return a.exec();
 
-    // todo: how to initialize voxel volume based on cameras?
+    // assuming that the positions of all cameras and the shape
+    // is such that 0 <= x, y, z, <= 100
+
 }

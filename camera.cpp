@@ -1,16 +1,23 @@
 #include "camera.h"
+#include <cmath>
 
 Camera::Camera(RGBA *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp, int width, int height, float inHeightAng) {
     RGBA *photoData = data;
     pos = inPos;
     look = inLook;
     up = inUp;
-    sceneWidth = width;
-    sceneHeight = height;
+    imageWidth = width;
+    imageHeight = height;
     heightAngle = inHeightAng;
+    aspectRatio = calculateAspectRatio();
     viewMatrix = calculateViewMatrix();
     inverseViewMatrix = inverse(viewMatrix);
 }
+
+float Camera::calculateAspectRatio() const {
+    return (float) imageWidth / (float) imageHeight;
+}
+
 
 glm::mat4 Camera::calculateViewMatrix() const {
     float px = pos[0]; float py = pos[1]; float pz = pos[2];
@@ -37,20 +44,31 @@ glm::mat4 Camera::calculateViewMatrix() const {
     return glm::mat4(result);
 }
 
-glm::vec2 projectVoxelToImage(Voxel v) {
-    // TODO
+glm::vec2 Camera::projectVoxelToImage(Voxel v) {
+    // convert coordinates to camera space
+    glm::vec4 voxWorldSpacePos(v.pos, 1.0f);
+    glm::vec4 voxCameraSpace = getViewMatrix() * voxWorldSpacePos;
+
+    // perform basic perspective division
+    float x = voxWorldSpacePos.x / voxWorldSpacePos.z;
+    float y = voxWorldSpacePos.y / voxWorldSpacePos.z;
+    // TOCHECK: does this need to be like raytracing or something??
+
+    // intrinsic parameters ignored here
+
+    return glm::vec2{x, y};
 }
 
 
-glm::vec3 getColorFromProjection(glm::vec2 coords) {
-    // TODO
-}
+RGBA Camera::getColorFromProjection(glm::vec2 coords) {
+    // Given normalized image space coordinates
+    float floatI = (imageWidth * (coords.x + 0.5)) - 0.5;
+    float floatJ = (imageHeight * (coords.y + 0.5)) - 0.5;
 
+    int i = floor(floatI);
+    int j = floor(floatJ);
 
-float Camera::getAspectRatio() const {
-    return (float) sceneWidth / (float) sceneHeight;
-}
+    int oneDimCoord = j * imageWidth + i;
 
-float Camera::getHeightAngle() const {
-    return heightAngle;
+    return photoData[oneDimCoord];
 }

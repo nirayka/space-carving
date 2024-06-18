@@ -30,11 +30,11 @@ void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
 
     for (Camera& camera : voxCams) {
         glm::vec2 projection = camera.projectVoxelToImage(voxel);
-        glm::vec3 color = camera.getColorFromProjection(projection);
-        voxel.redSum += color[0]; voxel.blueSum += color[1]; voxel.greenSum += color[2];
-        voxel.redSumSquared += color[0] * color[0];
-        voxel.greenSumSquared += color[1] * color[1];
-        voxel.blueSumSquared += color[2] * color[2];
+        RGBA color = camera.getColorFromProjection(projection);
+        voxel.redSum += color.r; voxel.greenSum += color.g; voxel.blueSum += color.b;
+        voxel.redSumSquared += color.r * color.r;
+        voxel.greenSumSquared += color.g * color.g;
+        voxel.blueSumSquared += color.b * color.b;
         voxel.seenCount += 1;
 
         if (!isConsistent(voxel)) {
@@ -140,4 +140,20 @@ void SpaceCarver::multiSweep() {
             }
         }
     } while (voxelsRemoved);
+
+    produceOutput();
+}
+
+void SpaceCarver::produceOutput() {
+    /*
+     * create string
+     * add beginning of json file
+     * iterate through all voxels
+         * for each voxel:
+         * if not carved, add to string
+     * add end of json file
+     * put string into json file
+     * save json file
+     *
+    */
 }
