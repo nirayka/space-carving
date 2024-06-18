@@ -14,11 +14,8 @@ public:
     void planeSweep(sweepDir dir);
     void multiSweep();
     void produceOutput();
-
-
-private:
     Scene scene;
-    int threshold;
+    float threshold;
 };
 
 #endif // SPACECARVER_H

@@ -12,19 +12,20 @@
 class Scene
 {
 public:
-    Scene(int inWidth, int inHeight, int inDepth, float inVoxSize);
+    Scene();
     void initializeVoxels();
     Voxel& getVoxel(int x, int y, int z);
     int getWidth();
     int getHeight();
     int getDepth();
     std::vector<Camera> getCamerasForVoxel(Voxel vox, sweepDir dir);
+    std::vector<Camera> cameras;
 
 private:
     int width, height, depth;
     float voxelSize;
+    int xNumVoxels, yNumVoxels, zNumVoxels;
     std::vector<Voxel> grid;
-    std::vector<Camera> cameras;
 };
 
 

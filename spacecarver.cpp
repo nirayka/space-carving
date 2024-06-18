@@ -3,9 +3,8 @@
 
 SpaceCarver::SpaceCarver()
 {
-    // TODO
-    // intiialize the scene so that its a cube in the positive x y z octant and that
-    // it contains all cameras
+    scene = Scene();
+    threshold = .05; // CHANGE IF DESIRED
 }
 
 bool SpaceCarver::isConsistent(Voxel v) {
@@ -145,6 +144,7 @@ void SpaceCarver::multiSweep() {
 }
 
 void SpaceCarver::produceOutput() {
+    // will implement later, do not touch
     /*
      * create string
      * add beginning of json file

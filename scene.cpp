@@ -5,34 +5,42 @@
 #include "glm/glm.hpp"
 
 
-Scene::Scene(int inWidth, int inHeight, int inDepth, float inVoxSize) {
-    width = inWidth;
-    height = inHeight;
-    depth = inDepth;
-    voxelSize = inVoxSize;
-    grid.resize(width * height * depth);
+Scene::Scene() {
+    // currently assumes that all cameras/shapes are located such that 0 <= x, y, z, <= 100
+    /* CHANGE IF DESIRED */
+    width = 100;
+    height = 100;
+    depth = 100;
+    voxelSize = 0.2;
+    //
+
+    xNumVoxels = width * (1 / voxelSize);
+    yNumVoxels = height * (1 / voxelSize);
+    zNumVoxels = depth * (1 / voxelSize);
+    grid.resize(xNumVoxels * yNumVoxels * zNumVoxels);
+
     initializeVoxels();
 }
 
 void Scene::initializeVoxels() {
-    for (int x = 0; x < width; ++x) {
-        for (int y = 0; y < height; ++y) {
-            for (int z = 0; z < depth; ++z) {
+    for (int x = 0; x < xNumVoxels; ++x) {
+        for (int y = 0; y < yNumVoxels; ++y) {
+            for (int z = 0; z < zNumVoxels; ++z) {
+                // x, y, z is position in grid of voxels
                 Voxel& voxel = getVoxel(x, y, z);
+                // this is position in worldspace
                 voxel.pos = glm::vec3(x * voxelSize, y * voxelSize, z * voxelSize);
             }
         }
     }
 }
 
-// TODO
 std::vector<Camera> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
     std::vector<Camera> returnCams;
 
-    // these four points represent the base of the pyramidal beam, i.e.,
-    // they represent a plane which is one face of the scene volume cube,
-    // parallel to current sweep plane, on the side that is opposite
-    // to the sweep direction
+    // these four points represent the base of the pyramidal beam, i.e., they represent a plane
+    // which is one face of the scene volume cube, parallel to current sweep plane, on the
+    // side that is opposite to the sweep direction
     glm::vec3 p1, p2, p3, p4;
 
     switch (dir) {
@@ -85,6 +93,7 @@ std::vector<Camera> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
     return returnCams;
 }
 
+// tocheck
 Voxel& Scene::getVoxel(int x, int y, int z) {
     return grid[x + width * (y + height * z)];
 }

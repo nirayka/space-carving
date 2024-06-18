@@ -3,11 +3,12 @@
 
 #include "glm/glm.hpp"
 #include "structs.h"
+#include <vector>
 
 class Camera
 {
 public:
-    Camera(RGBA *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp, int width, int height, float inHeightAng);
+    Camera(std::vector<RGBA>* data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp);
 
     glm::mat4 calculateViewMatrix() const;
     void getInverseViewMatrix() const;
@@ -30,7 +31,7 @@ public:
     float heightAngle; // in radians
 
 private:
-    RGBA *photoData;
+    std::vector<RGBA> *photoData;
     glm::vec4 look;
     glm::vec4 up;
 };

@@ -1,14 +1,19 @@
 #include "camera.h"
 #include <cmath>
 
-Camera::Camera(RGBA *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp, int width, int height, float inHeightAng) {
-    RGBA *photoData = data;
+Camera::Camera(std::vector<RGBA> *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp) {
+    photoData = data;
     pos = inPos;
     look = inLook;
     up = inUp;
-    imageWidth = width;
-    imageHeight = height;
-    heightAngle = inHeightAng;
+
+
+    /* CHANGE IF DESIRED */
+    imageWidth = 100;
+    imageHeight = 100;
+    heightAngle = M_PI / 4;
+    //
+
     aspectRatio = calculateAspectRatio();
     viewMatrix = calculateViewMatrix();
     inverseViewMatrix = inverse(viewMatrix);
@@ -17,6 +22,7 @@ Camera::Camera(RGBA *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp, in
 float Camera::calculateAspectRatio() const {
     return (float) imageWidth / (float) imageHeight;
 }
+
 
 
 glm::mat4 Camera::calculateViewMatrix() const {
@@ -47,11 +53,11 @@ glm::mat4 Camera::calculateViewMatrix() const {
 glm::vec2 Camera::projectVoxelToImage(Voxel v) {
     // convert coordinates to camera space
     glm::vec4 voxWorldSpacePos(v.pos, 1.0f);
-    glm::vec4 voxCameraSpace = getViewMatrix() * voxWorldSpacePos;
+    glm::vec4 voxCameraSpace = viewMatrix * voxWorldSpacePos;
 
     // perform basic perspective division
-    float x = voxWorldSpacePos.x / voxWorldSpacePos.z;
-    float y = voxWorldSpacePos.y / voxWorldSpacePos.z;
+    float x = voxCameraSpace.x / voxCameraSpace.z;
+    float y = voxCameraSpace.y / voxCameraSpace.z;
     // TOCHECK: does this need to be like raytracing or something??
 
     // intrinsic parameters ignored here
@@ -70,5 +76,5 @@ RGBA Camera::getColorFromProjection(glm::vec2 coords) {
 
     int oneDimCoord = j * imageWidth + i;
 
-    return photoData[oneDimCoord];
+    return photoData->at(oneDimCoord);
 }
