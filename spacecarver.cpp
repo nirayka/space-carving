@@ -25,11 +25,11 @@ bool SpaceCarver::isConsistent(Voxel v) {
 
 
 void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
-    std::vector<Camera> voxCams = scene.getCamerasForVoxel(voxel, dir);
+    std::vector<Camera*> voxCams = scene.getCamerasForVoxel(voxel, dir);
 
-    for (Camera& camera : voxCams) {
-        glm::vec2 projection = camera.projectVoxelToImage(voxel);
-        RGBA color = camera.getColorFromProjection(projection);
+    for (Camera* camera : voxCams) {
+        glm::vec2 projection = camera->projectVoxelToImage(voxel);
+        RGBA color = camera->getColorFromProjection(projection);
         voxel.redSum += color.r; voxel.greenSum += color.g; voxel.blueSum += color.b;
         voxel.redSumSquared += color.r * color.r;
         voxel.greenSumSquared += color.g * color.g;

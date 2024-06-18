@@ -1,0 +1,1 @@
+img1.png posx,posy,posz lookx,looky,lookz, upx,upy,upz

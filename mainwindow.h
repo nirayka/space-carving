@@ -21,9 +21,9 @@ class MainWindow;
 }
 
 struct Metadata {
-    QString position;
-    QString lookVector;
-    QString upVector;
+    glm::vec3 position;
+    glm::vec3 lookVector;
+    glm::vec3 upVector;
 };
 
 class MainWindow : public QMainWindow {
@@ -35,15 +35,28 @@ public:
 
 private slots:
     void onSelectImages();
+    void onSelectMetadata();
 
 private:
     SpaceCarver* carver;
     void setupSpaceCarver();
     Ui::MainWindow *ui;
+
     QList<QString> selectImages();
+    QList<QString> imageFiles;
+    bool imagesSelected;
+
+    QList<QString> selectMetadata();
+    QList<QString> metadataFile;
+    bool metadataSelected;
+
+    QMap<QString, Metadata> mapMetadata();
+    void parse();
+
+    // helpers
     glm::vec3 stringToVec(QString str);
-    QMap<QString, Metadata> createMetadataForms(const QList<QString> &imageFiles);
     void loadImage(const QString &filePath, std::vector<RGBA>* pixelArray);
+    QString readFile(QString fileName);
 };
 
 #endif // MAINWINDOW_H

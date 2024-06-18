@@ -35,8 +35,8 @@ void Scene::initializeVoxels() {
     }
 }
 
-std::vector<Camera> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
-    std::vector<Camera> returnCams;
+std::vector<Camera*> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
+    std::vector<Camera*> returnCams;
 
     // these four points represent the base of the pyramidal beam, i.e., they represent a plane
     // which is one face of the scene volume cube, parallel to current sweep plane, on the
@@ -79,9 +79,9 @@ std::vector<Camera> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
     if (glm::dot(n3, p1 - p3) > 0) n3 = -n3;
     if (glm::dot(n4, p2 - p4) > 0) n4 = -n4;
 
-    for (Camera cam : cameras) {
+    for (Camera* cam : cameras) {
         // camera position
-        glm::vec3 c = cam.pos;
+        glm::vec3 c = cam->pos;
 
         // check if camera is inside the pyramid
         if (glm::dot(n1, c - p1) >= 0 && glm::dot(n2, c - p2) >= 0 &&

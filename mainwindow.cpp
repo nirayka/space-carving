@@ -19,14 +19,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Connect the selectImagesButton click signal to the onSelectImages slot
     connect(ui->selectImagesButton, &QPushButton::clicked, this, &MainWindow::onSelectImages);
+    connect(ui->selectMetadataButton, &QPushButton::clicked, this, &MainWindow::onSelectMetadata);
 }
 
 /* MainWindow Destructor */
 MainWindow::~MainWindow() {
     delete ui; // Clean up the UI
+    for (Camera* cam : carver->scene.cameras) {
+        delete cam->photoData;
+        delete cam;
+    }
+    delete carver;
 }
 
-/* open a file dialog and select images */
 QList<QString> MainWindow::selectImages() {
     QFileDialog dialog(this); // Create a file dialog
     dialog.setFileMode(QFileDialog::ExistingFiles); // Allow selection of existing files only
@@ -37,81 +42,24 @@ QList<QString> MainWindow::selectImages() {
     if (dialog.exec()) {
         return dialog.selectedFiles();
     }
-    return QList<QString>(); // Return an empty list if no files are selected
+    return QList<QString>(); // else return empty list
 }
 
-/* create forms for user inputted metadata */
-QMap<QString, Metadata> MainWindow::createMetadataForms(const QList<QString> &imageFiles) {
-    QMap<QString, Metadata> metadataMap; // Map to hold metadata for each image
-    QVBoxLayout *layout = new QVBoxLayout(this); // Create a vertical layout
+QList<QString> MainWindow::selectMetadata() {
+    QFileDialog dialog(this); // Create a file dialog
+    dialog.setFileMode(QFileDialog::ExistingFile); // Allow selection of existing files only
+    dialog.setNameFilter(tr("Text Files (*.txt)")); // Set the file filter for images
+    dialog.setViewMode(QFileDialog::Detail); // Set the view mode to detailed
 
-    // Iterate over each selected image file
-    for (const QString &file : imageFiles) {
-        QFormLayout *formLayout = new QFormLayout; // Create a form layout for metadata
-
-        // Create line edits for position, look vector, and up vector
-        QLineEdit *positionEdit = new QLineEdit;
-        QLineEdit *lookVectorEdit = new QLineEdit;
-        QLineEdit *upVectorEdit = new QLineEdit;
-
-        // Add rows to the form layout with labels and line edits
-        formLayout->addRow(tr("Position for %1").arg(file), positionEdit);
-        formLayout->addRow(tr("Look Vector for %1").arg(file), lookVectorEdit);
-        formLayout->addRow(tr("Up Vector for %1").arg(file), upVectorEdit);
-
-        // Add the form layout to the main layout
-        layout->addLayout(formLayout);
-
-        // Create a Metadata struct and populate it with the entered values
-        Metadata metadata;
-        connect(positionEdit, &QLineEdit::textChanged, [=, &metadataMap](const QString &text) {
-            metadataMap[file].position = text;
-        });
-        connect(lookVectorEdit, &QLineEdit::textChanged, [=, &metadataMap](const QString &text) {
-            metadataMap[file].lookVector = text;
-        });
-        connect(upVectorEdit, &QLineEdit::textChanged, [=, &metadataMap](const QString &text) {
-            metadataMap[file].upVector = text;
-        });
-
-        // Append the metadata to the map
-        metadataMap.insert(file, metadata);
+    // If the user selects a file, return the selected file
+    if (dialog.exec()) {
+        return dialog.selectedFiles();
     }
-
-    //setLayout(layout); // Set the layout to the main window
-
-    //NEW2
-    // Set the layout to the main window (only if it does not have one already)
-    if (!this->layout()) {
-        this->setLayout(layout);
-    } else {
-        qWarning() << "MainWindow already has a layout.";
-    }
-
-
-    //NEW
-    // Check if central widget already has a layout
-    if (this->centralWidget()->layout() == nullptr) {
-        this->centralWidget()->setLayout(layout);
-    } else {
-        qWarning() << "Central widget already has a layout.";
-        // Optionally: clear existing layout and set a new one
-        QLayout* oldLayout = this->centralWidget()->layout();
-        QLayoutItem* item;
-        while ((item = oldLayout->takeAt(0)) != nullptr) {
-            delete item->widget();
-            delete item;
-        }
-        delete oldLayout;
-        this->centralWidget()->setLayout(layout);
-    }
-
-
-
-    return metadataMap; // Return the map of metadata
+    return QList<QString>(); // Return an empty list if no file is selected
 }
 
-/* load image and convert to RGBA struct */
+
+/* convert image to RGBA struct */
 void MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
     QImage myImage;
     if (!myImage.load(file)) {
@@ -125,6 +73,18 @@ void MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
     }
 }
 
+void MainWindow::onSelectImages() {
+    imageFiles = selectImages(); // Open file dialog and get selected images
+    imagesSelected = !imageFiles.isEmpty();
+    if (imagesSelected && metadataSelected) { parse(); }
+}
+
+void MainWindow::onSelectMetadata() {
+    metadataFile = selectMetadata();
+    metadataSelected= !metadataFile.isEmpty();
+    if (imagesSelected && metadataSelected) { parse(); }
+}
+
 /* convert user inputted QStrings into their vector representations */
 glm::vec3 MainWindow::stringToVec(QString str) {
     QStringList list = str.split(',');
@@ -136,25 +96,52 @@ glm::vec3 MainWindow::stringToVec(QString str) {
     return glm::vec3(x, y, z);
 }
 
-/* main function for image selection */
-void MainWindow::onSelectImages() {
-    QList<QString> imageFiles = selectImages(); // Open file dialog and get selected images
+QString MainWindow::readFile(QString fileName) {
+    QFile file(fileName); // Create a QFile object with the given file name
 
-    // If there are selected images, create metadata forms and process the images
-    if (!imageFiles.isEmpty()) {
-        QMap<QString, Metadata> metadataMap = createMetadataForms(imageFiles); // Create metadata forms
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Could not open file for reading:" << fileName;
+        return QString(); // Return an empty QString if the file cannot be opened
+    }
+    QTextStream in(&file); // Create a QTextStream to read the file
+    QString fileContent = in.readAll(); // Read all the content of the file into a QString
+    file.close(); // Close the file
+    return fileContent;
+}
 
-        // Iterate over each selected image file
-        for (const QString &file : imageFiles) {
-            std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
-            loadImage(file, pixelArray);
+/* create a map from image filename to metadata */
+QMap<QString, Metadata> MainWindow::mapMetadata() {
+    QMap<QString, Metadata> map;
+    // each line of metadata represents an image and is formatted as follows:
+    // imgfilename.png posx,posy,posz lookx,looky,lookz, upx,upy,upz
+    // first set is filename, second is position, third is lookvector, fourth is upvector
+    QString metadata = readFile(metadataFile.first());
+    QList<QString> dataList = metadata.split('\n');
+    for (QString imgObj : dataList) {
+        QList<QString> items = imgObj.split(' ');
+        QString imgName = items[0];
+        map[imgName].position = stringToVec(items[1]);
+        map[imgName].lookVector = stringToVec(items[2]);
+        map[imgName].upVector = stringToVec(items[3]);
+    }
+    return map;
+}
 
-            Metadata metadata = metadataMap.value(file);
-            glm::vec4 pos = glm::vec4{stringToVec(metadata.position), 1.f};
-            glm::vec4 look = glm::vec4{stringToVec(metadata.lookVector), 0.f};
-            glm::vec4 up = glm::vec4{stringToVec(metadata.upVector), 0.f};
-            Camera cam = *new Camera(pixelArray, pos, look, up);
-            carver->scene.cameras.push_back(cam);
-        }
+/* fill in scene with cameras and their associated image and metadata */
+void MainWindow::parse() {
+    QMap<QString, Metadata> metadataMap = mapMetadata(); // Create metadata forms
+
+    // Iterate over each selected image file
+    for (const QString &file : imageFiles) {
+        std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
+        loadImage(file, pixelArray);
+        Metadata metadata = metadataMap[file];
+        glm::vec4 pos = glm::vec4{metadata.position, 1.f};
+        glm::vec4 look = glm::vec4{metadata.lookVector, 0.f};
+        glm::vec4 up = glm::vec4{metadata.upVector, 0.f};
+        Camera* cam = new Camera(pixelArray, pos, look, up);
+        carver->scene.cameras.push_back(cam);
     }
 }
+
+// TOCHECK: figure out dynamic memory allocation

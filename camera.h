@@ -24,6 +24,7 @@ public:
     glm::vec4 pos;
     glm::mat4 viewMatrix;
     glm::mat4 inverseViewMatrix;
+    std::vector<RGBA> *photoData;
 
     int imageWidth;
     int imageHeight;
@@ -31,7 +32,6 @@ public:
     float heightAngle; // in radians
 
 private:
-    std::vector<RGBA> *photoData;
     glm::vec4 look;
     glm::vec4 up;
 };
