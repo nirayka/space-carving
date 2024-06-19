@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Connect the selectImagesButton click signal to the onSelectImages slot
     connect(ui->selectImagesButton, &QPushButton::clicked, this, &MainWindow::onSelectImages);
     connect(ui->selectMetadataButton, &QPushButton::clicked, this, &MainWindow::onSelectMetadata);
+    connect(ui->parseButton, &QPushButton::clicked, this, &MainWindow::onParse);
+    connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStart);
     qDebug() << "UI setup complete";
 
     qDebug() << "Initializing carver";
@@ -33,6 +35,30 @@ MainWindow::~MainWindow() {
         delete cam;
     }
     delete carver;
+}
+
+void MainWindow::onSelectImages() {
+    imageFiles = selectImages(); // Open file dialog and get selected images
+    imagesSelected = !imageFiles.isEmpty();
+}
+
+void MainWindow::onSelectMetadata() {
+    metadataFile = selectMetadata();
+    metadataSelected= !metadataFile.isEmpty();
+    if (imagesSelected && metadataSelected) { parse(); }
+}
+
+void MainWindow::onParse() {
+    if (imagesSelected && metadataSelected) {
+        parse();
+    } else {
+        qDebug() << "Please selected valid image(s) and metadata.";
+    }
+}
+
+void MainWindow::onStart() {
+    parse();
+    carver->multiSweep();
 }
 
 QList<QString> MainWindow::selectImages() {
@@ -65,6 +91,14 @@ QList<QString> MainWindow::selectMetadata() {
     return QList<QString>(); // Return an empty list if no file is selected
 }
 
+/* convert user inputted QStrings into their vector representations */
+glm::vec3 MainWindow::stringToVec(QString str) {
+    QStringList list = str.split(',');
+    float x = list[0].toFloat();
+    float y = list[1].toFloat();
+    float z = list[2].toFloat();
+    return glm::vec3(x, y, z);
+}
 
 /* convert image to RGBA struct */
 void MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
@@ -84,26 +118,6 @@ void MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
     }
 }
 
-void MainWindow::onSelectImages() {
-    imageFiles = selectImages(); // Open file dialog and get selected images
-    imagesSelected = !imageFiles.isEmpty();
-    if (imagesSelected && metadataSelected) { parse(); }
-}
-
-void MainWindow::onSelectMetadata() {
-    metadataFile = selectMetadata();
-    metadataSelected= !metadataFile.isEmpty();
-    if (imagesSelected && metadataSelected) { parse(); }
-}
-
-/* convert user inputted QStrings into their vector representations */
-glm::vec3 MainWindow::stringToVec(QString str) {
-    QStringList list = str.split(',');
-    float x = list[0].toFloat();
-    float y = list[1].toFloat();
-    float z = list[2].toFloat();
-    return glm::vec3(x, y, z);
-}
 
 QString MainWindow::readFile(QString fileName) {
     QFile file(fileName); // Create a QFile object with the given file name

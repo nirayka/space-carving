@@ -36,6 +36,8 @@ public:
 private slots:
     void onSelectImages();
     void onSelectMetadata();
+    void onParse();
+    void onStart();
 
 private:
     SpaceCarver* carver;

@@ -1,5 +1,7 @@
 #include "spacecarver.h"
 #include "structs.h"
+#include <iostream>
+#include <ostream>
 
 SpaceCarver::SpaceCarver()
 {
@@ -117,6 +119,8 @@ void SpaceCarver::planeSweep(sweepDir dir) {
 void SpaceCarver::multiSweep() {
     std::vector<sweepDir> directions = {posX, negX, posY, negY, posZ, negZ};
 
+    std::cout << "Start multi-sweeping" << std::endl;
+
     bool voxelsRemoved;
     do {
         voxelsRemoved = false;
@@ -139,6 +143,8 @@ void SpaceCarver::multiSweep() {
             }
         }
     } while (voxelsRemoved);
+
+    std::cout << "Multi-sweeping finished" << std::endl;
 
     produceOutput();
 }
