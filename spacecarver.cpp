@@ -27,8 +27,10 @@ bool SpaceCarver::isConsistent(Voxel v) {
 
 
 void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
+    // determine which cameras should be considered in this sweep
     std::vector<Camera*> voxCams = scene.getCamerasForVoxel(voxel, dir);
 
+    // for each camera corresponding to this voxel
     for (Camera* camera : voxCams) {
         glm::vec2 projection = camera->projectVoxelToImage(voxel);
         std::pair<bool, RGBA> inBoundsAndColor = camera->getColorFromProjection(projection);
@@ -38,12 +40,14 @@ void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
         if (!voxelInBounds) {
             return;
         }
+        std:: cout << "reached" << std::endl;
 
         // if point p is a background color, carve
         RGBA color = inBoundsAndColor.second;
-        if (color.r == 0 && color.g == 0 && color.b == 0) {
+        if (color.r <= 25 && color.g <= 25 && color.b <= 25) { // black threshold
             voxel.isCarved = true;
             voxelsRemoved = true;
+            std::cout << "background pixel removed" << std::endl;
             return;
         }
 
@@ -58,12 +62,17 @@ void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
         if (!isConsistent(voxel)) {
             voxel.isCarved = true;
             voxelsRemoved = true;
+            std::cout << "inconsistent pixel removed" << std::endl;
         }
     }
 }
 
 
 void SpaceCarver::planeSweep(sweepDir dir) {
+    // based on the given direction, iterate through each voxel that lies on
+    // the sweep plane and apply helpPlaneSweep(). Move the sweep plane
+    // one unit over in the sweep direction until the opposite end of the
+    // voxel volume has been reached.
     if (dir == posX) {
         std::cout << "Start +X plane-sweeping" << std::endl;
         for (int x = 0; x < scene.getWidth(); ++x) {
@@ -154,10 +163,12 @@ void SpaceCarver::multiSweep() {
     do {
         voxelsRemoved = false;
 
-        for (sweepDir direction : directions) {
-            planeSweep(direction);
-        }
-    } while (voxelsRemoved);
+        // apply Plane Sweep Algorithm in each of the six principle directions
+        for (sweepDir direction : directions) { planeSweep(direction); }
+
+        // step 3 of Multi-Sweep eliminated because of Lambertian Scene Optimizations
+
+    } while (voxelsRemoved); // repeat if voxels were removed during plane sweeping
 
     std::cout << "Multi-sweeping finished" << std::endl;
 

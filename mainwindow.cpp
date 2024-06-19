@@ -96,6 +96,7 @@ glm::vec3 MainWindow::stringToVec(QString str) {
     float x = list[0].toFloat();
     float y = list[1].toFloat();
     float z = list[2].toFloat();
+
     return glm::vec3(x, y, z);
 }
 
@@ -149,8 +150,8 @@ void MainWindow::parse() {
 
         QString imgName = items[0];
         glm::vec4 position = {stringToVec(items[1]), 1.f};
-        glm::vec4 lookVector = {stringToVec(items[2]), 0.f};
-        glm::vec4 upVector = {stringToVec(items[3]), 0.f};
+        glm::vec4 lookVector = {normalize(stringToVec(items[2])), 0.f};
+        glm::vec4 upVector = {normalize(stringToVec(items[3])), 0.f};
 
         std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
         glm::vec2 dims = loadImage(imgName, pixelArray);

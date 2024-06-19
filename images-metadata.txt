@@ -1,0 +1,6 @@
+image1.jpg 10,10,0 0,0,10 0,1,0 front
+image2.jpg 10,10,20 0,0,-10 0,1,0 back
+image3.jpg 0,10,10 10,0,0 0,1,0 left
+image4.jpg 20,10,10 -10,0,0 0,1,0 right
+image5.jpg 10,20,10 0,-10,0 0,0,-1 top
+image6.jpg 10,0,10 0,10,0 0,0,1 bottom

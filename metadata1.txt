@@ -1,6 +1,0 @@
-image1.jpg 0,10,10 0,0,1 1,0,0 posx
-image1.jpg 3,3,0 0,0,1 -1,0,0 negx
-image1.jpg 3,3,0 0,0,1 0,1,0 posy
-image1.jpg 3,3,0 0,0,1 0,1,0 negy
-image1.jpg 3,3,0 0,0,1 0,1,0 posz
-image1.jpg 3,3,0 0,0,1 0,1,0 negz

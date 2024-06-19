@@ -48,6 +48,7 @@ glm::mat4 Camera::calculateViewMatrix() const {
     return glm::mat4(result);
 }
 
+/* projects the voxel onto the camera's view plane */
 glm::vec2 Camera::projectVoxelToImage(Voxel v) {
     // convert coordinates to camera space
     glm::vec4 voxWorldSpacePos(v.pos, 1.0f);
@@ -56,30 +57,30 @@ glm::vec2 Camera::projectVoxelToImage(Voxel v) {
     // perform basic perspective division
     float x = voxCameraSpace.x / voxCameraSpace.z;
     float y = voxCameraSpace.y / voxCameraSpace.z;
-    // TOCHECK: does this need to be like raytracing or something??
 
-    // intrinsic parameters ignored here (intentional, not error)
+    // convert to normalized device coordinates
+    float tanFovY = tan(heightAngle / 2.0f);
+    x = x / (aspectRatio * tanFovY);
+    y = y / tanFovY;
 
     return glm::vec2{x, y};
 }
 
-/* returns true and the color of the projection if in bounds,
+/* returns true and the color of the projection if within image bounds,
  * otherwise returns false and black */
 std::pair<bool, RGBA> Camera::getColorFromProjection(glm::vec2 coords) {
-    // inputted coords are view plane coords w/ (0, 0) in center
+    // convert normalized device coordinates to pixel coordinates
+    int pixelX = (coords.x + 1.f) * 0.5f * imageWidth;
+    int pixelY = (1.f - coords.y) * 0.5f * imageHeight;
 
-    int x = round(coords[0]);
-    int y = round(coords[1]);
-
-    //     if (x < 0 || x >= imageWidth || y < 0 || y >= imageHeight) {
-    if ((abs(x) >= imageWidth / 2) || (abs(y) >= imageHeight / 2)) {
-        return std::make_pair(false, RGBA{0, 0, 0, 0}); // if out of bounds
+    // check if projection is within image bounds
+    if (pixelX < 0 || pixelX >= imageWidth || pixelY < 0 || pixelY >= imageHeight) {
+        return std::make_pair(false, RGBA{0, 0, 0, 0});
     }
 
-    // moving origin to top left of image
-    int xPrime = x + (imageWidth / 2);
-    int yPrime = y + (imageHeight / 2);
+    // get color from image data
+    int pixelIndex = pixelY * imageWidth + pixelX;
+    RGBA color = photoData->at(pixelIndex);
 
-    int oneDimCoord = yPrime * imageWidth + xPrime;
-    return std::make_pair(true, photoData->at(oneDimCoord));
+    return std::make_pair(true, color);
 }

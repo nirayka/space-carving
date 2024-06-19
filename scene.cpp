@@ -22,8 +22,7 @@ Scene::Scene() {
     initializeVoxels();
 }
 
-// account for out of bound ? account for background pixels ?
-
+// TOCHECK: account for out of bound ? account for background pixels ?
 void Scene::initializeVoxels() {
     for (int x = 0; x < xNumVoxels; ++x) {
         for (int y = 0; y < yNumVoxels; ++y) {
@@ -37,6 +36,9 @@ void Scene::initializeVoxels() {
     }
 }
 
+/* Find the cameras that fall in a pyramidal beam where the vertex is defined by
+ * the side of the voxel which faces the sweep plane and the base is defined
+ * by the sweep plane */
 std::vector<Camera*> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
     std::vector<Camera*> returnCams;
 
