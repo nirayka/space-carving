@@ -58,7 +58,7 @@ private:
 
     // helpers
     glm::vec3 stringToVec(QString str);
-    void loadImage(const QString &filePath, std::vector<RGBA>* pixelArray);
+    glm::vec2 loadImage(const QString &filePath, std::vector<RGBA>* pixelArray);
     QString readFile(QString fileName);
 };
 

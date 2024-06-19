@@ -45,7 +45,6 @@ void MainWindow::onSelectImages() {
 void MainWindow::onSelectMetadata() {
     metadataFile = selectMetadata();
     metadataSelected= !metadataFile.isEmpty();
-    if (imagesSelected && metadataSelected) { parse(); }
 }
 
 void MainWindow::onParse() {
@@ -101,7 +100,7 @@ glm::vec3 MainWindow::stringToVec(QString str) {
 }
 
 /* convert image to RGBA struct */
-void MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
+glm::vec2 MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
     QImage myImage;
     if (!myImage.load(file)) {
         qDebug() << "Failed to load in image";
@@ -116,6 +115,8 @@ void MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
     for (int i = 0; i < arr.size() / 4.f; i++){
         pixelArray->push_back(RGBA{(std::uint8_t) arr[4*i], (std::uint8_t) arr[4*i+1], (std::uint8_t) arr[4*i+2], (std::uint8_t) arr[4*i+3]});
     }
+
+    return glm::vec2{width, height};
 }
 
 
@@ -152,9 +153,9 @@ void MainWindow::parse() {
         glm::vec4 upVector = {stringToVec(items[3]), 0.f};
 
         std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
-        loadImage(imgName, pixelArray);
+        glm::vec2 dims = loadImage(imgName, pixelArray);
 
-        Camera* cam = new Camera(pixelArray, position, lookVector, upVector);
+        Camera* cam = new Camera(pixelArray, position, lookVector, upVector, dims[0], dims[1]);
         carver->scene.cameras.push_back(cam);
     }
 

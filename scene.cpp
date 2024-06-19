@@ -22,6 +22,8 @@ Scene::Scene() {
     initializeVoxels();
 }
 
+// account for out of bound ? account for background pixels ?
+
 void Scene::initializeVoxels() {
     for (int x = 0; x < xNumVoxels; ++x) {
         for (int y = 0; y < yNumVoxels; ++y) {

@@ -7,7 +7,7 @@
 struct Voxel {
     glm::vec3 pos;
     bool isCarved;
-    int seenCount;
+    int observations;
     int redSum, redSumSquared;
     int greenSum, greenSumSquared;
     int blueSum, blueSumSquared;

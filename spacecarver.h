@@ -16,6 +16,7 @@ public:
     void produceOutput();
     Scene scene;
     float threshold;
+    bool voxelsRemoved;
 };
 
 #endif // SPACECARVER_H

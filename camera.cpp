@@ -1,18 +1,18 @@
 #include "camera.h"
 #include <cmath>
+#include <iostream>
+#include <ostream>
 
-Camera::Camera(std::vector<RGBA> *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp) {
+Camera::Camera(std::vector<RGBA> *data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp, int inWidth, int inHeight) {
     photoData = data;
     pos = inPos;
     look = inLook;
     up = inUp;
-
+    imageWidth = inWidth;
+    imageHeight = inHeight;
 
     /* CHANGE IF DESIRED */
-    imageWidth = 100;
-    imageHeight = 100;
-    heightAngle = M_PI / 4;
-    //
+    heightAngle = M_PI / 4; // TOCHECK
 
     aspectRatio = calculateAspectRatio();
     viewMatrix = calculateViewMatrix();
@@ -22,8 +22,6 @@ Camera::Camera(std::vector<RGBA> *data, glm::vec4 inPos, glm::vec4 inLook, glm::
 float Camera::calculateAspectRatio() const {
     return (float) imageWidth / (float) imageHeight;
 }
-
-
 
 glm::mat4 Camera::calculateViewMatrix() const {
     float px = pos[0]; float py = pos[1]; float pz = pos[2];
@@ -60,21 +58,28 @@ glm::vec2 Camera::projectVoxelToImage(Voxel v) {
     float y = voxCameraSpace.y / voxCameraSpace.z;
     // TOCHECK: does this need to be like raytracing or something??
 
-    // intrinsic parameters ignored here
+    // intrinsic parameters ignored here (intentional, not error)
 
     return glm::vec2{x, y};
 }
 
+/* returns true and the color of the projection if in bounds,
+ * otherwise returns false and black */
+std::pair<bool, RGBA> Camera::getColorFromProjection(glm::vec2 coords) {
+    // inputted coords are view plane coords w/ (0, 0) in center
 
-RGBA Camera::getColorFromProjection(glm::vec2 coords) {
-    // Given normalized image space coordinates
-    float floatI = (imageWidth * (coords.x + 0.5)) - 0.5;
-    float floatJ = (imageHeight * (coords.y + 0.5)) - 0.5;
+    int x = round(coords[0]);
+    int y = round(coords[1]);
 
-    int i = floor(floatI);
-    int j = floor(floatJ);
+    //     if (x < 0 || x >= imageWidth || y < 0 || y >= imageHeight) {
+    if ((abs(x) >= imageWidth / 2) || (abs(y) >= imageHeight / 2)) {
+        return std::make_pair(false, RGBA{0, 0, 0, 0}); // if out of bounds
+    }
 
-    int oneDimCoord = j * imageWidth + i;
+    // moving origin to top left of image
+    int xPrime = x + (imageWidth / 2);
+    int yPrime = y + (imageHeight / 2);
 
-    return photoData->at(oneDimCoord);
+    int oneDimCoord = yPrime * imageWidth + xPrime;
+    return std::make_pair(true, photoData->at(oneDimCoord));
 }

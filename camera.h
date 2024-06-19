@@ -8,14 +8,14 @@
 class Camera
 {
 public:
-    Camera(std::vector<RGBA>* data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp);
+    Camera(std::vector<RGBA>* data, glm::vec4 inPos, glm::vec4 inLook, glm::vec4 inUp, int inWidth, int inHeight);
 
     glm::mat4 calculateViewMatrix() const;
     void getInverseViewMatrix() const;
 
     bool fallsInBeam(sweepDir direction) const;
     glm::vec2 projectVoxelToImage(Voxel v);
-    RGBA getColorFromProjection(glm::vec2 coords);
+    std::pair<bool, RGBA> getColorFromProjection(glm::vec2 coords);
 
     glm::mat4 getViewMatrix() const;
     float getHeightAngle() const;
