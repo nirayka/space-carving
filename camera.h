@@ -22,6 +22,8 @@ public:
     float calculateAspectRatio() const;
 
     glm::vec4 pos;
+    glm::vec4 look;
+    glm::vec4 up;
     glm::mat4 viewMatrix;
     glm::mat4 inverseViewMatrix;
     std::vector<RGBA> *photoData;
@@ -31,9 +33,6 @@ public:
     float aspectRatio;
     float heightAngle; // in radians
 
-private:
-    glm::vec4 look;
-    glm::vec4 up;
 };
 
 #endif // CAMERA_H

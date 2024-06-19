@@ -12,14 +12,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    qDebug() << "Setting up UI.";
+    qDebug() << "Setting up UI";
     ui->setupUi(this); // Setup the UI
-    carver = new SpaceCarver(); // setup spacecarver
-    qDebug() << "UI setup complete.";
-
     // Connect the selectImagesButton click signal to the onSelectImages slot
     connect(ui->selectImagesButton, &QPushButton::clicked, this, &MainWindow::onSelectImages);
     connect(ui->selectMetadataButton, &QPushButton::clicked, this, &MainWindow::onSelectMetadata);
+    qDebug() << "UI setup complete";
+
+    qDebug() << "Initializing carver";
+    carver = new SpaceCarver(); // setup spacecarver
+    imagesSelected = false; metadataSelected = false;
+    qDebug() << "Carver setup complete";
 }
 
 /* MainWindow Destructor */
@@ -33,6 +36,7 @@ MainWindow::~MainWindow() {
 }
 
 QList<QString> MainWindow::selectImages() {
+    qDebug() << "Selecting images";
     QFileDialog dialog(this); // Create a file dialog
     dialog.setFileMode(QFileDialog::ExistingFiles); // Allow selection of existing files only
     dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg *.jpeg)")); // Set the file filter for images
@@ -40,12 +44,14 @@ QList<QString> MainWindow::selectImages() {
 
     // If the user selects files, return the list of selected files
     if (dialog.exec()) {
+        qDebug() << "Image selection complete";
         return dialog.selectedFiles();
     }
     return QList<QString>(); // else return empty list
 }
 
 QList<QString> MainWindow::selectMetadata() {
+    qDebug() << "Selecting metadata";
     QFileDialog dialog(this); // Create a file dialog
     dialog.setFileMode(QFileDialog::ExistingFile); // Allow selection of existing files only
     dialog.setNameFilter(tr("Text Files (*.txt)")); // Set the file filter for images
@@ -53,6 +59,7 @@ QList<QString> MainWindow::selectMetadata() {
 
     // If the user selects a file, return the selected file
     if (dialog.exec()) {
+        qDebug() << "Metadata selection complete";
         return dialog.selectedFiles();
     }
     return QList<QString>(); // Return an empty list if no file is selected
@@ -109,39 +116,88 @@ QString MainWindow::readFile(QString fileName) {
     return fileContent;
 }
 
-/* create a map from image filename to metadata */
-QMap<QString, Metadata> MainWindow::mapMetadata() {
-    QMap<QString, Metadata> map;
+///* create a map from image filename to metadata */
+//void MainWindow::mapMetadata() {
+//    qDebug() << "Mapping metadata";
+//    // each line of metadata represents an image and is formatted as follows:
+//    // imgfilename.png posx,posy,posz lookx,looky,lookz, upx,upy,upz
+//    // first set is filename, second is position, third is lookvector, fourth is upvector
+//    QString metadata = readFile(metadataFile.first());
+//    QList<QString> dataList = metadata.split('\n');
+//    for (const QString &imgObj : dataList) { // TOCHECK
+//        QList<QString> items = imgObj.split(' ');
+//        QString imgName = items[0];
+//        imgNameToMeta[imgName].position = stringToVec(items[1]);
+//        imgNameToMeta[imgName].lookVector = stringToVec(items[2]);
+//        imgNameToMeta[imgName].upVector = stringToVec(items[3]);
+//    }
+//    qDebug() << "Metadata mapping complete";
+//}
+
+
+// OLD START
+//    for (const QString &imgObj : dataList) {
+//        QList<QString> items = imgObj.split(' ');
+//        QString imgName = items[0];
+
+//        Metadata* meta;
+
+//        qDebug() << "hi " << stringToVec(items[1]).x << stringToVec(items[1]).y << stringToVec(items[1]).z;
+
+//        meta->position = stringToVec(items[1]);
+//        meta->lookVector = stringToVec(items[2]);
+//        meta->upVector = stringToVec(items[3]);
+//        map.insert(imgName, meta);
+//    }
+//    qDebug() << "Metadata mapping complete";
+
+//    // Iterate over each selected image file
+//    for (const QString &file : imageFiles) {
+//        std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
+//        loadImage(file, pixelArray);
+//        Metadata perFileMeta = map[file];
+//        glm::vec4 pos = glm::vec4{perFileMeta.position, 1.f};
+//        glm::vec4 look = glm::vec4{perFileMeta.lookVector, 0.f};
+//        glm::vec4 up = glm::vec4{perFileMeta.upVector, 0.f};
+//        Camera* cam = new Camera(pixelArray, pos, look, up);
+//        carver->scene.cameras.push_back(cam);
+//        qDebug() << "added camera";
+//    }
+// OLD END
+
+/* fill in scene with cameras and their associated image and metadata */
+void MainWindow::parse() {
+    qDebug() << "Parsing";
+
     // each line of metadata represents an image and is formatted as follows:
     // imgfilename.png posx,posy,posz lookx,looky,lookz, upx,upy,upz
     // first set is filename, second is position, third is lookvector, fourth is upvector
     QString metadata = readFile(metadataFile.first());
-    QList<QString> dataList = metadata.split('\n');
-    for (QString imgObj : dataList) {
-        QList<QString> items = imgObj.split(' ');
+    QList<QString> cameraList = metadata.split('\n');
+    int numCams = cameraList.size();
+    carver->scene.cameras.resize(numCams);
+
+    qDebug() << "fidsdfsdf";
+    for (int i = 0; i < numCams; i++) {
+        qDebug() << "sdfafdf";
+        QString data = cameraList[i];
+
+        QList<QString> items = data.split(' ');
         QString imgName = items[0];
-        map[imgName].position = stringToVec(items[1]);
-        map[imgName].lookVector = stringToVec(items[2]);
-        map[imgName].upVector = stringToVec(items[3]);
-    }
-    return map;
-}
 
-/* fill in scene with cameras and their associated image and metadata */
-void MainWindow::parse() {
-    QMap<QString, Metadata> metadataMap = mapMetadata(); // Create metadata forms
+        glm::vec4 position = {stringToVec(items[1]), 1.f};
+        glm::vec4 lookVector = {stringToVec(items[2]), 0.f};
+        glm::vec4 upVector = {stringToVec(items[3]), 0.f};
 
-    // Iterate over each selected image file
-    for (const QString &file : imageFiles) {
+        carver->scene.cameras[i]->pos = position;
+        carver->scene.cameras[i]->look = lookVector;
+        carver->scene.cameras[i]->up = upVector;
+
         std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
-        loadImage(file, pixelArray);
-        Metadata metadata = metadataMap[file];
-        glm::vec4 pos = glm::vec4{metadata.position, 1.f};
-        glm::vec4 look = glm::vec4{metadata.lookVector, 0.f};
-        glm::vec4 up = glm::vec4{metadata.upVector, 0.f};
-        Camera* cam = new Camera(pixelArray, pos, look, up);
-        carver->scene.cameras.push_back(cam);
+        loadImage(imgName, pixelArray);
+        carver->scene.cameras[i]->photoData = pixelArray;
     }
+
+    qDebug() << "Parsing complete";
 }
 
-// TOCHECK: figure out dynamic memory allocation

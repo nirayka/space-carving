@@ -11,7 +11,7 @@ Scene::Scene() {
     width = 100;
     height = 100;
     depth = 100;
-    voxelSize = 0.2;
+    voxelSize = 0.5;
     //
 
     xNumVoxels = width * (1 / voxelSize);

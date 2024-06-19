@@ -39,6 +39,7 @@ private slots:
 
 private:
     SpaceCarver* carver;
+    //QMap<QString, Metadata> imgNameToMeta;
     void setupSpaceCarver();
     Ui::MainWindow *ui;
 
@@ -50,7 +51,7 @@ private:
     QList<QString> metadataFile;
     bool metadataSelected;
 
-    QMap<QString, Metadata> mapMetadata();
+    void mapMetadata();
     void parse();
 
     // helpers
