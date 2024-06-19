@@ -10,6 +10,11 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <kerning>true</kerning>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -17,11 +22,17 @@
    <widget class="QPushButton" name="selectImagesButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>91</width>
-      <height>24</height>
+      <x>180</x>
+      <y>90</y>
+      <width>151</width>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+      <kerning>true</kerning>
+     </font>
     </property>
     <property name="text">
      <string>Select Images</string>
@@ -30,11 +41,17 @@
    <widget class="QPushButton" name="selectMetadataButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>91</width>
-      <height>24</height>
+      <x>350</x>
+      <y>90</y>
+      <width>151</width>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+      <kerning>true</kerning>
+     </font>
     </property>
     <property name="text">
      <string>Select Metadata</string>

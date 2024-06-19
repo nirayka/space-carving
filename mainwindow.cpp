@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "UI setup complete";
 
     qDebug() << "Initializing carver";
-    carver = new SpaceCarver(); // setup spacecarver
+    carver = new SpaceCarver();
     imagesSelected = false; metadataSelected = false;
     qDebug() << "Carver setup complete";
 }
@@ -70,11 +70,15 @@ QList<QString> MainWindow::selectMetadata() {
 void MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
     QImage myImage;
     if (!myImage.load(file)) {
-        std::cout<<"Failed to load in image"<<std::endl;
+        qDebug() << "Failed to load in image";
     }
     myImage = myImage.convertToFormat(QImage::Format_RGBX8888);
+    int width = myImage.width();
+    int height = myImage.height();
     QByteArray arr = QByteArray::fromRawData((const char*) myImage.bits(), myImage.sizeInBytes());
 
+    pixelArray->clear();
+    pixelArray->reserve(width * height);
     for (int i = 0; i < arr.size() / 4.f; i++){
         pixelArray->push_back(RGBA{(std::uint8_t) arr[4*i], (std::uint8_t) arr[4*i+1], (std::uint8_t) arr[4*i+2], (std::uint8_t) arr[4*i+3]});
     }
