@@ -12,6 +12,8 @@
   </property>
   <property name="font">
    <font>
+    <family>Consolas</family>
+    <pointsize>12</pointsize>
     <kerning>true</kerning>
    </font>
   </property>
@@ -22,78 +24,83 @@
    <widget class="QPushButton" name="selectImagesButton">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>90</y>
-      <width>151</width>
-      <height>31</height>
+      <x>210</x>
+      <y>80</y>
+      <width>171</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>Consolas</family>
       <pointsize>14</pointsize>
       <kerning>true</kerning>
      </font>
     </property>
     <property name="text">
-     <string>Select Images</string>
+     <string>select images</string>
     </property>
    </widget>
    <widget class="QPushButton" name="selectMetadataButton">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>90</y>
-      <width>151</width>
-      <height>31</height>
+      <x>390</x>
+      <y>80</y>
+      <width>171</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>Consolas</family>
       <pointsize>14</pointsize>
       <kerning>true</kerning>
      </font>
     </property>
     <property name="text">
-     <string>Select Metadata</string>
+     <string>select metadata</string>
     </property>
    </widget>
    <widget class="QPushButton" name="parseButton">
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>210</x>
       <y>130</y>
-      <width>151</width>
-      <height>31</height>
+      <width>171</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>Consolas</family>
       <pointsize>16</pointsize>
+      <italic>true</italic>
       <kerning>true</kerning>
      </font>
     </property>
     <property name="text">
-     <string>Parse</string>
+     <string>parse</string>
     </property>
    </widget>
    <widget class="QPushButton" name="startButton">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>390</x>
       <y>130</y>
-      <width>151</width>
-      <height>31</height>
+      <width>171</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>15</pointsize>
+      <family>Consolas</family>
+      <pointsize>14</pointsize>
       <bold>true</bold>
       <kerning>true</kerning>
      </font>
     </property>
     <property name="text">
-     <string>Start Carving!</string>
+     <string>start carving!</string>
     </property>
    </widget>
   </widget>
@@ -103,12 +110,12 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSpace_Carver">
     <property name="title">
-     <string>Nirayka's Space Carver</string>
+     <string>★ Nirayka's Space Carver ★</string>
     </property>
    </widget>
    <addaction name="menuSpace_Carver"/>

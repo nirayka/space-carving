@@ -28,6 +28,7 @@ public:
     glm::mat4 inverseViewMatrix;
     std::vector<RGBA> *photoData;
 
+    int viewPlaneDepth;
     int imageWidth;
     int imageHeight;
     float aspectRatio;

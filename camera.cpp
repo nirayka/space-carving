@@ -12,7 +12,8 @@ Camera::Camera(std::vector<RGBA> *data, glm::vec4 inPos, glm::vec4 inLook, glm::
     imageHeight = inHeight;
 
     /* CHANGE IF DESIRED */
-    heightAngle = M_PI / 4; // TOCHECK
+    heightAngle = M_PI / 4;
+    viewPlaneDepth = 1;
 
     aspectRatio = calculateAspectRatio();
     viewMatrix = calculateViewMatrix();
@@ -49,19 +50,20 @@ glm::mat4 Camera::calculateViewMatrix() const {
 }
 
 /* projects the voxel onto the camera's view plane */
-glm::vec2 Camera::projectVoxelToImage(Voxel v) {
+glm::vec2 Camera::projectVoxelToImage(Voxel vox) {
     // convert coordinates to camera space
-    glm::vec4 voxWorldSpacePos(v.pos, 1.0f);
+    glm::vec4 voxWorldSpacePos(vox.pos, 1.0f);
     glm::vec4 voxCameraSpace = viewMatrix * voxWorldSpacePos;
 
     // perform basic perspective division
-    float x = voxCameraSpace.x / voxCameraSpace.z;
-    float y = voxCameraSpace.y / voxCameraSpace.z;
+    float u = voxCameraSpace.x / voxCameraSpace.z;
+    float v = voxCameraSpace.y / voxCameraSpace.z;
 
-    // convert to normalized device coordinates
-    float tanFovY = tan(heightAngle / 2.0f);
-    x = x / (aspectRatio * tanFovY);
-    y = y / tanFovY;
+    // scale to normalized device coordinates
+    float viewPlaneHeight = 2 * viewPlaneDepth * tan(heightAngle / 2);
+    float viewPlaneWidth = viewPlaneHeight * aspectRatio;
+    float x = u / viewPlaneWidth;
+    float y = v / viewPlaneHeight;
 
     return glm::vec2{x, y};
 }
@@ -70,8 +72,11 @@ glm::vec2 Camera::projectVoxelToImage(Voxel v) {
  * otherwise returns false and black */
 std::pair<bool, RGBA> Camera::getColorFromProjection(glm::vec2 coords) {
     // convert normalized device coordinates to pixel coordinates
-    int pixelX = (coords.x + 1.f) * 0.5f * imageWidth;
-    int pixelY = (1.f - coords.y) * 0.5f * imageHeight;
+    float floatPixelX = (coords.x + 1.f) * 0.5f * imageWidth;
+    float floatPixelY = (1.f - coords.y) * 0.5f * imageHeight;
+
+    int pixelX = round(floatPixelX);
+    int pixelY = round(floatPixelY);
 
     // check if projection is within image bounds
     if (pixelX < 0 || pixelX >= imageWidth || pixelY < 0 || pixelY >= imageHeight) {

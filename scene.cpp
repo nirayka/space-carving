@@ -3,16 +3,18 @@
 #include <iostream>
 #include <vector>
 #include "glm/glm.hpp"
+#include <iostream>
+#include <ostream>
 
 
 Scene::Scene() {
     // currently assumes that all cameras/shapes are located such that 0 <= x, y, z, <= 100
     /* CHANGE IF DESIRED */
-    width = 100;
-    height = 100;
-    depth = 100;
+    width = 20;
+    height = 20;
+    depth = 20;
     voxelSize = 0.5;
-    //
+
 
     xNumVoxels = width * (1 / voxelSize);
     yNumVoxels = height * (1 / voxelSize);
@@ -97,7 +99,6 @@ std::vector<Camera*> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
     return returnCams;
 }
 
-// tocheck
 Voxel& Scene::getVoxel(int x, int y, int z) {
     return grid[x + width * (y + height * z)];
 }
