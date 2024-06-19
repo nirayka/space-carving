@@ -95,11 +95,9 @@ void MainWindow::onSelectMetadata() {
 /* convert user inputted QStrings into their vector representations */
 glm::vec3 MainWindow::stringToVec(QString str) {
     QStringList list = str.split(',');
-
     float x = list[0].toFloat();
     float y = list[1].toFloat();
     float z = list[2].toFloat();
-
     return glm::vec3(x, y, z);
 }
 
@@ -116,88 +114,31 @@ QString MainWindow::readFile(QString fileName) {
     return fileContent;
 }
 
-///* create a map from image filename to metadata */
-//void MainWindow::mapMetadata() {
-//    qDebug() << "Mapping metadata";
-//    // each line of metadata represents an image and is formatted as follows:
-//    // imgfilename.png posx,posy,posz lookx,looky,lookz, upx,upy,upz
-//    // first set is filename, second is position, third is lookvector, fourth is upvector
-//    QString metadata = readFile(metadataFile.first());
-//    QList<QString> dataList = metadata.split('\n');
-//    for (const QString &imgObj : dataList) { // TOCHECK
-//        QList<QString> items = imgObj.split(' ');
-//        QString imgName = items[0];
-//        imgNameToMeta[imgName].position = stringToVec(items[1]);
-//        imgNameToMeta[imgName].lookVector = stringToVec(items[2]);
-//        imgNameToMeta[imgName].upVector = stringToVec(items[3]);
-//    }
-//    qDebug() << "Metadata mapping complete";
-//}
-
-
-// OLD START
-//    for (const QString &imgObj : dataList) {
-//        QList<QString> items = imgObj.split(' ');
-//        QString imgName = items[0];
-
-//        Metadata* meta;
-
-//        qDebug() << "hi " << stringToVec(items[1]).x << stringToVec(items[1]).y << stringToVec(items[1]).z;
-
-//        meta->position = stringToVec(items[1]);
-//        meta->lookVector = stringToVec(items[2]);
-//        meta->upVector = stringToVec(items[3]);
-//        map.insert(imgName, meta);
-//    }
-//    qDebug() << "Metadata mapping complete";
-
-//    // Iterate over each selected image file
-//    for (const QString &file : imageFiles) {
-//        std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
-//        loadImage(file, pixelArray);
-//        Metadata perFileMeta = map[file];
-//        glm::vec4 pos = glm::vec4{perFileMeta.position, 1.f};
-//        glm::vec4 look = glm::vec4{perFileMeta.lookVector, 0.f};
-//        glm::vec4 up = glm::vec4{perFileMeta.upVector, 0.f};
-//        Camera* cam = new Camera(pixelArray, pos, look, up);
-//        carver->scene.cameras.push_back(cam);
-//        qDebug() << "added camera";
-//    }
-// OLD END
-
 /* fill in scene with cameras and their associated image and metadata */
 void MainWindow::parse() {
     qDebug() << "Parsing";
 
-    // each line of metadata represents an image and is formatted as follows:
+    // each line of metadata represents one image and is formatted as follows:
     // imgfilename.png posx,posy,posz lookx,looky,lookz, upx,upy,upz
-    // first set is filename, second is position, third is lookvector, fourth is upvector
     QString metadata = readFile(metadataFile.first());
     QList<QString> cameraList = metadata.split('\n');
     int numCams = cameraList.size();
-    carver->scene.cameras.resize(numCams);
 
-    qDebug() << "fidsdfsdf";
     for (int i = 0; i < numCams; i++) {
-        qDebug() << "sdfafdf";
         QString data = cameraList[i];
-
         QList<QString> items = data.split(' ');
-        QString imgName = items[0];
 
+        QString imgName = items[0];
         glm::vec4 position = {stringToVec(items[1]), 1.f};
         glm::vec4 lookVector = {stringToVec(items[2]), 0.f};
         glm::vec4 upVector = {stringToVec(items[3]), 0.f};
 
-        carver->scene.cameras[i]->pos = position;
-        carver->scene.cameras[i]->look = lookVector;
-        carver->scene.cameras[i]->up = upVector;
-
         std::vector<RGBA>* pixelArray = new std::vector<RGBA>;
         loadImage(imgName, pixelArray);
-        carver->scene.cameras[i]->photoData = pixelArray;
+
+        Camera* cam = new Camera(pixelArray, position, lookVector, upVector);
+        carver->scene.cameras.push_back(cam);
     }
 
     qDebug() << "Parsing complete";
 }
-
