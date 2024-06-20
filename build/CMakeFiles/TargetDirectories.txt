@@ -1,0 +1,9 @@
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/space-carving.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/edit_cache.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/rebuild_cache.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/list_install_components.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/install.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/install/local.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/install/strip.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/space-carving_autogen_timestamp_deps.dir
+C:/Users/niray/OneDrive/Desktop/bvc/space-carving/build/CMakeFiles/space-carving_autogen.dir

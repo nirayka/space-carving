@@ -1,14 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "spacecarver.h"
+#include "src/spacecarver.h"
 #include <QMainWindow>
 #include <QList>
 #include <QVector>
 #include <QString>
-#include "structs.h"
-#include "spacecarver.h"
-#include "scene.h"
+#include "src/structs.h"
+#include "src/spacecarver.h"
+#include "src/scene.h"
 
 
 QT_BEGIN_NAMESPACE

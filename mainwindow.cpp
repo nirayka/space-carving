@@ -102,8 +102,10 @@ glm::vec3 MainWindow::stringToVec(QString str) {
 
 /* convert image to RGBA struct */
 glm::vec2 MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArray) {
+    QString path = "data/";
+    QString filePath = path + file;
     QImage myImage;
-    if (!myImage.load(file)) {
+    if (!myImage.load(filePath)) {
         qDebug() << "Failed to load in image";
     }
     myImage = myImage.convertToFormat(QImage::Format_RGBX8888);
