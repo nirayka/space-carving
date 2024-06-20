@@ -1,6 +1,6 @@
-image1.jpg 10,10,0 0,0,10 0,1,0 front
-image2.jpg 10,10,20 0,0,-10 0,1,0 back
-image3.jpg 0,10,10 10,0,0 0,1,0 left
-image4.jpg 20,10,10 -10,0,0 0,1,0 right
-image5.jpg 10,20,10 0,-10,0 0,0,-1 top
-image6.jpg 10,0,10 0,10,0 0,0,1 bottom
+largesquare.jpg 10,10,-5 0,0,10 0,1,0 front
+largesquare.jpg 10,10,25 0,0,-10 0,1,0 back
+largesquare.jpg -5,10,10 10,0,0 0,1,0 left
+largesquare.jpg 25,10,10 -10,0,0 0,1,0 right
+largesquare.jpg 10,25,10 0,-10,0 0,0,-1 top
+largesquare.jpg 10,-5,10 0,10,0 0,0,1 bottom

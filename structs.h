@@ -8,11 +8,9 @@ struct Voxel {
     glm::vec3 pos;
     bool isCarved;
     int observations;
-    int redSum, redSumSquared;
-    int greenSum, greenSumSquared;
-    int blueSum, blueSumSquared;
-
-    // Voxel() : sum_color(0.0f), sum_color_squared(0.0f), count(0), is_carved(false) {}
+    float redSum, redSumSquared;
+    float greenSum, greenSumSquared;
+    float blueSum, blueSumSquared;
 };
 
 enum sweepDir {

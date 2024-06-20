@@ -1,0 +1,6 @@
+large-1.jpg 10,10,-5 0,0,10 0,1,0 front
+large-2.jpg 10,10,25 0,0,-10 0,1,0 back
+large-3.jpg -5,10,10 10,0,0 0,1,0 left
+large-4.jpg 25,10,10 -10,0,0 0,1,0 right
+large-5.jpg 10,25,10 0,-10,0 0,0,-1 top
+large-6.jpg 10,-5,10 0,10,0 0,0,1 bottom

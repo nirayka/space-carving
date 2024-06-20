@@ -6,25 +6,24 @@
 #include <iostream>
 #include <ostream>
 
+// scenewidth vs numvoxels... TOCHECK
 
 Scene::Scene() {
     // currently assumes that all cameras/shapes are located such that 0 <= x, y, z, <= 100
     /* CHANGE IF DESIRED */
-    width = 20;
-    height = 20;
-    depth = 20;
-    voxelSize = 0.5;
+    sceneWidth = 20;
+    sceneHeight = 20;
+    sceneDepth = 20;
+    voxelSize = 1;
 
-
-    xNumVoxels = width * (1 / voxelSize);
-    yNumVoxels = height * (1 / voxelSize);
-    zNumVoxels = depth * (1 / voxelSize);
+    xNumVoxels = sceneWidth / voxelSize;
+    yNumVoxels = sceneHeight / voxelSize;
+    zNumVoxels = sceneDepth / voxelSize;
     grid.resize(xNumVoxels * yNumVoxels * zNumVoxels);
 
     initializeVoxels();
 }
 
-// TOCHECK: account for out of bound ? account for background pixels ?
 void Scene::initializeVoxels() {
     for (int x = 0; x < xNumVoxels; ++x) {
         for (int y = 0; y < yNumVoxels; ++y) {
@@ -33,6 +32,9 @@ void Scene::initializeVoxels() {
                 Voxel& voxel = getVoxel(x, y, z);
                 // this is position in worldspace
                 voxel.pos = glm::vec3(x * voxelSize, y * voxelSize, z * voxelSize);
+                voxel.isCarved = false; voxel.observations = 0;
+                voxel.redSum = 0; voxel.greenSum = 0; voxel.blueSum = 0;
+                voxel.redSumSquared = 0; voxel.blueSumSquared = 0; voxel.greenSumSquared = 0;
             }
         }
     }
@@ -51,22 +53,22 @@ std::vector<Camera*> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
 
     switch (dir) {
         case posX:
-            p1 = {0, 0, 0}; p2 = {0, height, 0}; p3 = {0, height, depth}; p4 = {0, 0, depth};
+            p1 = {0, 0, 0}; p2 = {0, sceneHeight, 0}; p3 = {0, sceneHeight, sceneDepth}; p4 = {0, 0, sceneDepth};
             break;
         case negX:
-            p1 = {width, 0, 0}; p2 = {width, height, 0}; p3 = {width, height, depth}; p4 = {width, 0, depth};
+            p1 = {sceneWidth, 0, 0}; p2 = {sceneWidth, sceneHeight, 0}; p3 = {sceneWidth, sceneHeight, sceneDepth}; p4 = {sceneWidth, 0, sceneDepth};
             break;
         case posY:
-            p1 = {0, 0, 0}; p2 = {0, 0, depth}; p3 = {width, 0, depth}; p4 = {width, 0, 0};
+            p1 = {0, 0, 0}; p2 = {0, 0, sceneDepth}; p3 = {sceneWidth, 0, sceneDepth}; p4 = {sceneWidth, 0, 0};
             break;
         case negY:
-            p1 = {0, height, 0}; p2 = {0, height, depth}; p3 = {width, height, depth}; p4 = {width, height, 0};
+            p1 = {0, sceneHeight, 0}; p2 = {0, sceneHeight, sceneDepth}; p3 = {sceneWidth, sceneHeight, sceneDepth}; p4 = {sceneWidth, sceneHeight, 0};
             break;
         case posZ:
-            p1 = {0, 0, 0}; p2 = {0, height, 0}; p3 = {width, height, 0}; p4 = {width, 0, 0};
+            p1 = {0, 0, 0}; p2 = {0, sceneHeight, 0}; p3 = {sceneWidth, sceneHeight, 0}; p4 = {sceneWidth, 0, 0};
             break;
         case negZ:
-            p1 = {0, 0, depth}; p2 = {0, height, depth}; p3 = {width, height, depth}; p4 = {width, 0, depth};
+            p1 = {0, 0, sceneDepth}; p2 = {0, sceneHeight, sceneDepth}; p3 = {sceneWidth, sceneHeight, sceneDepth}; p4 = {sceneWidth, 0, sceneDepth};
             break;
     }
 
@@ -96,15 +98,15 @@ std::vector<Camera*> Scene::getCamerasForVoxel(Voxel vox, sweepDir dir) {
         }
     }
 
+    // tocheck shouldnt there only ever be one camera returned
+//    if (returnCams.size() != 1 && returnCams.size() != 0) {
+//        std::cout<<"here"<<std::endl;
+//    }
+
     return returnCams;
 }
 
+// in voxel space
 Voxel& Scene::getVoxel(int x, int y, int z) {
-    return grid[x + width * (y + height * z)];
+    return grid[x + xNumVoxels * (y + yNumVoxels * z)];
 }
-
-int Scene::getWidth() { return width; }
-
-int Scene::getHeight() { return height; }
-
-int Scene::getDepth() { return depth; }

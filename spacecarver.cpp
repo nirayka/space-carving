@@ -48,7 +48,6 @@ void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
         if (color.r <= 25 && color.g <= 25 && color.b <= 25) { // black threshold
             voxel.isCarved = true;
             voxelsRemoved = true;
-//            std::cout << "background pixel removed" << std::endl;
             return;
         }
 
@@ -63,7 +62,6 @@ void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
         if (!isConsistent(voxel)) {
             voxel.isCarved = true;
             voxelsRemoved = true;
-            //std::cout << "inconsistent pixel removed" << std::endl;
         }
     }
 }
@@ -76,9 +74,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
     // voxel volume has been reached.
     if (dir == posX) {
         //std::cout << "Start +X plane-sweeping" << std::endl;
-        for (int x = 0; x < scene.getWidth(); ++x) {
-            for (int y = 0; y < scene.getHeight(); ++y) {
-                for (int z = 0; z < scene.getDepth(); ++z) {
+        for (int x = 0; x < scene.xNumVoxels; ++x) {
+            for (int y = 0; y < scene.yNumVoxels; ++y) {
+                for (int z = 0; z < scene.zNumVoxels; ++z) {
                     Voxel& voxel = scene.getVoxel(x, y, z);
                     if (!voxel.isCarved) {
                         helpPlaneSweep(voxel, dir);
@@ -89,9 +87,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
        // std::cout << "Finished +X plane-sweeping" << std::endl;
     } else if (dir == negX) {
       // std::cout << "Start -X plane-sweeping" << std::endl;
-        for (int x = scene.getWidth() - 1; x >= 0; --x) {
-            for (int y = 0; y < scene.getHeight(); ++y) {
-                for (int z = 0; z < scene.getDepth(); ++z) {
+        for (int x = scene.xNumVoxels - 1; x >= 0; --x) {
+            for (int y = 0; y < scene.yNumVoxels; ++y) {
+                for (int z = 0; z < scene.zNumVoxels; ++z) {
                     Voxel& voxel = scene.getVoxel(x, y, z);
                     if (!voxel.isCarved) {
                         helpPlaneSweep(voxel, dir);
@@ -102,9 +100,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
       //  std::cout << "Finished -X plane-sweeping" << std::endl;
     } else if (dir == posY) {
       //  std::cout << "Start +Y plane-sweeping" << std::endl;
-        for (int y = 0; y < scene.getHeight(); ++y) {
-            for (int x = 0; x < scene.getWidth(); ++x) {
-                for (int z = 0; z < scene.getDepth(); ++z) {
+        for (int y = 0; y < scene.yNumVoxels; ++y) {
+            for (int x = 0; x < scene.xNumVoxels; ++x) {
+                for (int z = 0; z < scene.zNumVoxels; ++z) {
                     Voxel& voxel = scene.getVoxel(x, y, z);
                     if (!voxel.isCarved) {
                         helpPlaneSweep(voxel, dir);
@@ -115,9 +113,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
        // std::cout << "Finished +Y plane-sweeping" << std::endl;
     } else if (dir == negY) {
       //  std::cout << "Start -Y plane-sweeping" << std::endl;
-        for (int y = scene.getHeight() - 1; y >= 0; --y) {
-            for (int x = 0; x < scene.getWidth(); ++x) {
-                for (int z = 0; z < scene.getDepth(); ++z) {
+        for (int y = scene.yNumVoxels - 1; y >= 0; --y) {
+            for (int x = 0; x < scene.xNumVoxels; ++x) {
+                for (int z = 0; z < scene.zNumVoxels; ++z) {
                     Voxel& voxel = scene.getVoxel(x, y, z);
                     if (!voxel.isCarved) {
                         helpPlaneSweep(voxel, dir);
@@ -128,9 +126,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
       //  std::cout << "Finished -Y plane-sweeping" << std::endl;
     } else if (dir == posZ) {
      //   std::cout << "Start +Z plane-sweeping" << std::endl;
-        for (int z = 0; z < scene.getDepth(); ++z) {
-            for (int x = 0; x < scene.getWidth(); ++x) {
-                for (int y = 0; y < scene.getHeight(); ++y) {
+        for (int z = 0; z < scene.zNumVoxels; ++z) {
+            for (int x = 0; x < scene.xNumVoxels; ++x) {
+                for (int y = 0; y < scene.yNumVoxels; ++y) {
                     Voxel& voxel = scene.getVoxel(x, y, z);
                     if (!voxel.isCarved) {
                         helpPlaneSweep(voxel, dir);
@@ -141,9 +139,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
     //    std::cout << "Finished +Z plane-sweeping" << std::endl;
     } else if (dir == negZ) {
     //    std::cout << "Start -Z plane-sweeping" << std::endl;
-        for (int z = scene.getDepth() - 1; z >= 0; --z) {
-            for (int x = 0; x < scene.getWidth(); ++x) {
-                for (int y = 0; y < scene.getHeight(); ++y) {
+        for (int z = scene.zNumVoxels - 1; z >= 0; --z) {
+            for (int x = 0; x < scene.xNumVoxels; ++x) {
+                for (int y = 0; y < scene.yNumVoxels; ++y) {
                     Voxel& voxel = scene.getVoxel(x, y, z);
                     if (!voxel.isCarved) {
                         helpPlaneSweep(voxel, dir);

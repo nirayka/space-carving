@@ -15,16 +15,13 @@ public:
     Scene();
     void initializeVoxels();
     Voxel& getVoxel(int x, int y, int z);
-    int getWidth();
-    int getHeight();
-    int getDepth();
     std::vector<Camera*> getCamerasForVoxel(Voxel vox, sweepDir dir);
     std::vector<Camera*> cameras;
-
-private:
-    int width, height, depth;
+    int sceneWidth, sceneHeight, sceneDepth;
     float voxelSize;
     int xNumVoxels, yNumVoxels, zNumVoxels;
+
+private:
     std::vector<Voxel> grid;
 };
 
