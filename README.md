@@ -25,7 +25,7 @@ of any camera, even when they were in the view plane. Solved by re-doing the mat
 to figure out. Solved by adding a line in CMakeLists.txt.
 
 *June 21:* Testing on basic data where the shape to be reconstructed is a cube and the viewpoints are in the six
-principle directions. Trying to solve infinite loop in multiSweep(). 
+principle directions (increasing and decreasing X, Y , and Z directions). Trying to solve infinite loop in multiSweep(). 
 
 ## Algorithm Overview
 TODO
