@@ -8,7 +8,7 @@
 // scenewidth vs numvoxels... TOCHECK
 
 Scene::Scene() {
-    // currently assumes that all cameras/shapes are located such that 0 <= x, y, z, <= 100
+    // currently assumes that all cameras/shapes are located such that 0 <= x, y, z, <= 20
     /* CHANGE IF DESIRED */
     sceneWidth = 20;
     sceneHeight = 20;
