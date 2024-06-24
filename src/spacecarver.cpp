@@ -6,18 +6,20 @@
 SpaceCarver::SpaceCarver()
 {
     scene = Scene();
-    threshold = .05; // CHANGE IF DESIRED
+    threshold = .05; // change if desired
 }
 
 bool SpaceCarver::isConsistent(Voxel v) {
-    float redStdDev = (1/(v.observations)) *
-                      (v.redSumSquared - ((1/v.observations) * v.redSumSquared * v.redSumSquared));
+    if (v.observations == 1) { return true; }
 
-    float greenStdDev = (1/(v.observations)) *
-                      (v.greenSumSquared - ((1/v.observations) * v.greenSumSquared * v.greenSumSquared));
+    float redStdDev = (1/(v.observations - 1)) *
+                      (v.redSumSquared - ((1/v.observations) * v.redSum * v.redSum));
 
-    float blueStdDev = (1/(v.observations)) *
-                      (v.blueSumSquared - ((1/v.observations) * v.blueSumSquared * v.blueSumSquared));
+    float greenStdDev = (1/(v.observations - 1)) *
+                      (v.greenSumSquared - ((1/v.observations) * v.greenSum * v.greenSum));
+
+    float blueStdDev = (1/(v.observations - 1)) *
+                        (v.blueSumSquared - ((1/v.observations) * v.blueSum * v.blueSum));
 
     if (redStdDev > threshold || greenStdDev > threshold || blueStdDev > threshold) {
         return false;
@@ -28,8 +30,6 @@ bool SpaceCarver::isConsistent(Voxel v) {
 
 void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
     // determine which cameras should be considered in this sweep
-
-    //TOCHECK: correct cameras are grabbed from voxel
     std::vector<Camera*> voxCams = scene.getCamerasForVoxel(voxel, dir);
 
     // for each camera corresponding to this voxel
@@ -39,29 +39,27 @@ void SpaceCarver::helpPlaneSweep(Voxel voxel, sweepDir dir) {
 
         // if point p is not visible from c, it is trivially photo-consistent with c
         bool voxelInBounds = inBoundsAndColor.first;
-        if (!voxelInBounds) {
-            return;
-        }
+        if (!voxelInBounds) { return; }
 
         // if point p is a background color, carve
         RGBA color = inBoundsAndColor.second;
         if (color.r <= 25 && color.g <= 25 && color.b <= 25) { // black threshold
-            voxel.isCarved = true;
-            voxelsRemoved = true;
+            voxel.isCarved = true; voxelsRemoved = true;
             return;
         }
 
         // otherwise, keep track of per-voxel statistics
-        voxel.redSum += color.r; voxel.greenSum += color.g; voxel.blueSum += color.b;
+        voxel.redSum += color.r;
         voxel.redSumSquared += color.r * color.r;
+        voxel.greenSum += color.g;
         voxel.greenSumSquared += color.g * color.g;
+        voxel.blueSum += color.b;
         voxel.blueSumSquared += color.b * color.b;
         voxel.observations += 1;
 
         // and if photo-inconsistent, carve
         if (!isConsistent(voxel)) {
-            voxel.isCarved = true;
-            voxelsRemoved = true;
+            voxel.isCarved = true; voxelsRemoved = true;
         }
     }
 }
@@ -73,7 +71,7 @@ void SpaceCarver::planeSweep(sweepDir dir) {
     // one unit over in the sweep direction until the opposite end of the
     // voxel volume has been reached.
     if (dir == posX) {
-        //std::cout << "Start +X plane-sweeping" << std::endl;
+//        std::cout << "Start +X plane-sweeping" << std::endl;
         for (int x = 0; x < scene.xNumVoxels; ++x) {
             for (int y = 0; y < scene.yNumVoxels; ++y) {
                 for (int z = 0; z < scene.zNumVoxels; ++z) {
@@ -84,9 +82,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
                 }
             }
         }
-       // std::cout << "Finished +X plane-sweeping" << std::endl;
+//        std::cout << "Finished +X plane-sweeping" << std::endl;
     } else if (dir == negX) {
-      // std::cout << "Start -X plane-sweeping" << std::endl;
+//       std::cout << "Start -X plane-sweeping" << std::endl;
         for (int x = scene.xNumVoxels - 1; x >= 0; --x) {
             for (int y = 0; y < scene.yNumVoxels; ++y) {
                 for (int z = 0; z < scene.zNumVoxels; ++z) {
@@ -97,9 +95,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
                 }
             }
         }
-      //  std::cout << "Finished -X plane-sweeping" << std::endl;
+//        std::cout << "Finished -X plane-sweeping" << std::endl;
     } else if (dir == posY) {
-      //  std::cout << "Start +Y plane-sweeping" << std::endl;
+//        std::cout << "Start +Y plane-sweeping" << std::endl;
         for (int y = 0; y < scene.yNumVoxels; ++y) {
             for (int x = 0; x < scene.xNumVoxels; ++x) {
                 for (int z = 0; z < scene.zNumVoxels; ++z) {
@@ -110,9 +108,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
                 }
             }
         }
-       // std::cout << "Finished +Y plane-sweeping" << std::endl;
+//        std::cout << "Finished +Y plane-sweeping" << std::endl;
     } else if (dir == negY) {
-      //  std::cout << "Start -Y plane-sweeping" << std::endl;
+//        std::cout << "Start -Y plane-sweeping" << std::endl;
         for (int y = scene.yNumVoxels - 1; y >= 0; --y) {
             for (int x = 0; x < scene.xNumVoxels; ++x) {
                 for (int z = 0; z < scene.zNumVoxels; ++z) {
@@ -123,9 +121,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
                 }
             }
         }
-      //  std::cout << "Finished -Y plane-sweeping" << std::endl;
+//        std::cout << "Finished -Y plane-sweeping" << std::endl;
     } else if (dir == posZ) {
-     //   std::cout << "Start +Z plane-sweeping" << std::endl;
+//        std::cout << "Start +Z plane-sweeping" << std::endl;
         for (int z = 0; z < scene.zNumVoxels; ++z) {
             for (int x = 0; x < scene.xNumVoxels; ++x) {
                 for (int y = 0; y < scene.yNumVoxels; ++y) {
@@ -136,9 +134,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
                 }
             }
         }
-    //    std::cout << "Finished +Z plane-sweeping" << std::endl;
+//        std::cout << "Finished +Z plane-sweeping" << std::endl;
     } else if (dir == negZ) {
-    //    std::cout << "Start -Z plane-sweeping" << std::endl;
+//        std::cout << "Start -Z plane-sweeping" << std::endl;
         for (int z = scene.zNumVoxels - 1; z >= 0; --z) {
             for (int x = 0; x < scene.xNumVoxels; ++x) {
                 for (int y = 0; y < scene.yNumVoxels; ++y) {
@@ -149,10 +147,9 @@ void SpaceCarver::planeSweep(sweepDir dir) {
                 }
             }
         }
-      //  std::cout << "Finished -Z plane-sweeping" << std::endl;
+//        std::cout << "Finished -Z plane-sweeping" << std::endl;
     }
 }
-
 
 void SpaceCarver::multiSweep() {
     std::vector<sweepDir> directions = {posX, negX, posY, negY, posZ, negZ};
@@ -164,7 +161,7 @@ void SpaceCarver::multiSweep() {
 
         // apply Plane Sweep Algorithm in each of the six principle directions
         for (sweepDir direction : directions) { planeSweep(direction); }
-        std::cout << roundcount << " round(s) planesweep complete" << std::endl;
+        std::cout << roundcount << " planeSweep rounds complete" << std::endl;
         roundcount++;
 
         // step 3 of Multi-Sweep eliminated because of Lambertian Scene Optimizations
@@ -177,6 +174,8 @@ void SpaceCarver::multiSweep() {
 }
 
 void SpaceCarver::produceOutput() {
+    std::cout << "Producing output" << std::endl;
+
     // will implement later, do not touch
     /*
      * create string
@@ -189,4 +188,7 @@ void SpaceCarver::produceOutput() {
      * save json file
      *
     */
+
+    std::cout << "Output produced" << std::endl;
+
 }

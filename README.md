@@ -8,9 +8,9 @@ original shape. Voxels are chosen to be carved depending on their 'photo-consist
 across the 2D images. 
 
 ## Progress Journal
-*June 14:* Read paper 3x, took notes.
+*June 14:* Read paper a few times and took notes.
 
-*June 15:* Wrote extremely detailed pseudocode for algo. Figured out
+*June 15:* Wrote detailed pseudocode for algo. Figured out
 project structure. Wrote function definitions for algo and helpers.
 
 *June 16:* Implemented algo and helpers.
@@ -28,7 +28,18 @@ to figure out. Solved by adding a line in CMakeLists.txt.
 principle directions (increasing and decreasing X, Y , and Z directions). Trying to solve infinite loop in multiSweep(). 
 
 ## Algorithm Overview
-TODO
+Kutulakos and Seitz' *Space Carving* describes two methods of 3D shape reconstruction
+via space carving, also commonly known as voxel carving. This is an implementation of the
+second method, known as the 'Multi-Sweep Space Carving Algorithm.' Given 2D photographs
+of a shape, taken from several arbitrary but known viewpoints, the Multi-Sweep algorithm
+provides a 3D model representing an accurate reconstruction of the shape.
+
+*Key Features*
+* Voxel-based representation
+* Use of Lambertian Scenes
+* Photoconsistency Check
+* Plane Sweep Algorithm
+* Multi-Sweep Algorithm
 
 ## Project Structure
 **Folders:**

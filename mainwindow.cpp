@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     qDebug() << "Setting up UI";
     ui->setupUi(this); // Setup the UI
-    // Connect the selectImagesButton click signal to the onSelectImages slot
+    // connect click signals to corresponding slots
     connect(ui->selectImagesButton, &QPushButton::clicked, this, &MainWindow::onSelectImages);
     connect(ui->selectMetadataButton, &QPushButton::clicked, this, &MainWindow::onSelectMetadata);
     connect(ui->parseButton, &QPushButton::clicked, this, &MainWindow::onParse);
@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 /* MainWindow Destructor */
 MainWindow::~MainWindow() {
-    delete ui; // Clean up the UI
+    delete ui;
     for (Camera* cam : carver->scene.cameras) {
         delete cam->photoData;
         delete cam;
@@ -38,7 +38,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::onSelectImages() {
-    imageFiles = selectImages(); // Open file dialog and get selected images
+    imageFiles = selectImages();
     imagesSelected = !imageFiles.isEmpty();
 }
 
@@ -62,14 +62,14 @@ void MainWindow::onStart() {
 
 QList<QString> MainWindow::selectImages() {
     qDebug() << "Selecting images";
-    QFileDialog dialog(this); // Create a file dialog
-    dialog.setFileMode(QFileDialog::ExistingFiles); // Allow selection of existing files only
-    dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg *.jpeg)")); // Set the file filter for images
-    dialog.setViewMode(QFileDialog::Detail); // Set the view mode to detailed
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFiles);
+    dialog.setNameFilter(tr("Images (*.png *.jpg *.jpeg)"));
+    dialog.setViewMode(QFileDialog::Detail);
 
-    // If the user selects files, return the list of selected files
+    // if user selects file(s), return them in a list
     if (dialog.exec()) {
-        qDebug() << "Image selection complete";
+        qDebug() << "Image selected";
         return dialog.selectedFiles();
     }
     return QList<QString>(); // else return empty list
@@ -77,17 +77,17 @@ QList<QString> MainWindow::selectImages() {
 
 QList<QString> MainWindow::selectMetadata() {
     qDebug() << "Selecting metadata";
-    QFileDialog dialog(this); // Create a file dialog
-    dialog.setFileMode(QFileDialog::ExistingFile); // Allow selection of existing files only
-    dialog.setNameFilter(tr("Text Files (*.txt)")); // Set the file filter for images
-    dialog.setViewMode(QFileDialog::Detail); // Set the view mode to detailed
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setNameFilter(tr("Text Files (*.txt)"));
+    dialog.setViewMode(QFileDialog::Detail);
 
-    // If the user selects a file, return the selected file
+    // if user selects file(s), return them in a list
     if (dialog.exec()) {
-        qDebug() << "Metadata selection complete";
+        qDebug() << "Metadata selected";
         return dialog.selectedFiles();
     }
-    return QList<QString>(); // Return an empty list if no file is selected
+    return QList<QString>(); // else return empty list
 }
 
 /* convert user inputted QStrings into their vector representations */
@@ -118,21 +118,20 @@ glm::vec2 MainWindow::loadImage(const QString &file, std::vector<RGBA>* pixelArr
     for (int i = 0; i < arr.size() / 4.f; i++){
         pixelArray->push_back(RGBA{(std::uint8_t) arr[4*i], (std::uint8_t) arr[4*i+1], (std::uint8_t) arr[4*i+2], (std::uint8_t) arr[4*i+3]});
     }
-
     return glm::vec2{width, height};
 }
 
 
 QString MainWindow::readFile(QString fileName) {
-    QFile file(fileName); // Create a QFile object with the given file name
+    QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Could not open file for reading:" << fileName;
-        return QString(); // Return an empty QString if the file cannot be opened
+        return QString(); // return empty QString if file can't be opened
     }
-    QTextStream in(&file); // Create a QTextStream to read the file
-    QString fileContent = in.readAll(); // Read all the content of the file into a QString
-    file.close(); // Close the file
+    QTextStream in(&file); // make stream
+    QString fileContent = in.readAll(); // read file contents into QString
+    file.close();
     return fileContent;
 }
 
